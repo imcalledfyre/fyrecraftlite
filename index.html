@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fyrecraft: Revived</title>
+    <style>
+        /* General styling */
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            font-family: Arial, sans-serif;
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            overflow: hidden;
+        }
+
+        /* Background animation */
+        body {
+            background: linear-gradient(-45deg, #ff9a9e, #fad0c4, #fbc2eb, #a18cd1);
+            background-size: 400% 400%;
+            animation: gradient 10s ease infinite;
+        }
+
+        @keyframes gradient {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* Content box */
+        .content {
+            background: rgba(0, 0, 0, 0.6);
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+        }
+
+        p {
+            font-size: 1rem;
+            margin: 20px 0;
+        }
+
+        /* Launch button */
+        #launch-btn {
+            padding: 15px 30px;
+            font-size: 1.2rem;
+            border: none;
+            border-radius: 5px;
+            background: #ff9a9e;
+            color: white;
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+            transition: background 0.3s ease;
+        }
+
+        #launch-btn:disabled {
+            background: #888;
+            cursor: not-allowed;
+        }
+
+        #launch-btn:hover:not(:disabled) {
+            background: #fad0c4;
+        }
+
+        /* Modal styling */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0, 0, 0, 0.8);
+            padding: 20px;
+            color: white;
+            text-align: center;
+            border-radius: 10px;
+            z-index: 1000;
+            width: 90%;
+            max-width: 400px;
+        }
+
+        .modal p {
+            margin: 0;
+            font-size: 1rem;
+        }
+
+        .modal button {
+            margin-top: 15px;
+            padding: 10px 20px;
+            background: #ff9a9e;
+            border: none;
+            color: white;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        .modal button:hover {
+            background: #fad0c4;
+        }
+    </style>
+</head>
+<body>
+    <div class="content">
+        <h1>Fyrecraft: Revived</h1>
+      <p><b>Teachers: Do not block this site as it is used for clubs.</b></p>
+        <p>This tool is created exclusively for Minecraft Club use. It is not intended to be used during school hours.</p>
+        <p>This site only will function during Minecraft club hours!!</p>
+        <h2></h2>
+        <button id="launch-btn">Play</button>
+    </div>
+
+    <!-- Modal -->
+    <div id="modal" class="modal">
+        <p>Sorry, you can only play Fyrecraft during Minecraft Club hours (Friday, 3:00 PM to 4:00 PM).</p>
+        <button id="close-modal">Okay</button>
+    </div>
+
+    <script>
+        // ABC class definition
+        class ABC {
+            constructor(config = {}) {
+                this.type = config.type || "blank";
+                this.url = config.url || "about:blank";
+            }
+            setType(type) {
+                if (!type) return;
+                this.type = type;
+            }
+            setUrl(url) {
+                if (!url) return;
+                this.url = url;
+            }
+            open() {
+                if (this.type == "blank") {
+                    try {
+                        const page = window.open();
+                        page.document.body.innerHTML = `
+                            <iframe style="height:100%; width: 100%; border: none; position: fixed; top: 0; right: 0; left: 0; bottom: 0;" 
+                                    sandbox="allow-forms allow-modals allow-scripts" 
+                                    src="${this.url}"></iframe>`;
+                    } catch {}
+                }
+            }
+        }
+
+        // Konami Code setup
+        const konamiCode = ['ArrowUp', 'ArrowUp', 'ArrowDown', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'ArrowLeft', 'ArrowRight'];
+        let konamiIndex = 0;
+
+        // Launch button and modal
+        const launchButton = document.getElementById('launch-btn');
+        const modal = document.getElementById('modal');
+        const closeModal = document.getElementById('close-modal');
+
+        // Check if it's Minecraft Club hours
+        function isMinecraftClubHours() {
+            const now = new Date();
+            const isFriday = now.getDay() === 5; // Friday
+            const currentHour = now.getHours();
+            const currentMinute = now.getMinutes();
+
+            return isFriday && (currentHour === 15 || (currentHour === 14 && currentMinute >= 0));
+        }
+
+        // Open the modal with the message
+        function openModal() {
+            modal.style.display = 'block';
+        }
+
+        // Close the modal
+        closeModal.addEventListener('click', () => {
+            modal.style.display = 'none';
+        });
+
+        // Initialize the button behavior
+        function initialize() {
+            launchButton.addEventListener('click', () => {
+                if (isMinecraftClubHours()) {
+                    const page = new ABC({
+                        type: 'blank',
+                        url: 'server.html'
+                    });
+                    page.open();
+                } else {
+                    openModal();
+                }
+            });
+
+            // Konami Code handler
+            window.addEventListener('keydown', (event) => {
+                if (event.key === konamiCode[konamiIndex]) {
+                    konamiIndex++;
+                    if (konamiIndex === konamiCode.length) {
+                        // Reset Konami Code index and launch the server
+                        konamiIndex = 0;
+                        const page = new ABC({
+                            type: 'blank',
+                            url: 'server.html'
+                        });
+                        page.open();
+                    }
+                } else {
+                    konamiIndex = 0; // Reset if the sequence breaks
+                }
+            });
+        }
+
+        // Enable/disable button dynamically
+        setInterval(() => {
+            launchButton.disabled = !isMinecraftClubHours();
+        }, 1000);
+
+        // Initialize the behavior
+        initialize();
+    </script>
+</body>
+</html>
